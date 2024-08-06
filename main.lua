@@ -77,14 +77,14 @@ end
 
 -- Anti-AFK Code
 local vu = game:GetService("VirtualUser")
-game:GetService("Players").LocalPlayer.Idled:Connect(function()
+game:GetService("Players").LocalPlayer.Idled:connect(function()
     vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
     wait(1)
     vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
 end)
 
 -- Script Base
-repeat wait() until game:IsLoaded() and (game.Players.LocalPlayer or game.Players.PlayerAdded:Wait()) and (game.Players.LocalPlayer.Character or game.Players.CharacterAdded:Wait())
+repeat wait() until game:IsLoaded and (game.Players.LocalPlayer or game.Players.PlayerAdded:Wait()) and (game.Players.LocalPlayer.Character or game.Players.CharacterAdded:Wait())
 if getgenv().Ran then 
     return
 else
@@ -180,3 +180,27 @@ while true do
 
     wait(0.25)
 end
+
+-- Função de teste para criar uma ferramenta no terceiro slot
+local UserInputService = game:GetService("UserInputService")
+UserInputService.InputBegan:Connect(function(input, processed)
+    if not processed and input.KeyCode == Enum.KeyCode.G then
+        local backpack = plr.Backpack
+        -- Remove qualquer item do terceiro slot
+        if backpack and backpack:FindFirstChildOfClass("Tool") then
+            backpack:FindFirstChildOfClass("Tool"):Destroy()
+        end
+        -- Cria uma nova ferramenta com o nome "Leopard Fruit" no terceiro slot
+        local tool = Instance.new("Tool")
+        tool.Name = "Leopard Fruit"
+        tool.Parent = backpack
+        -- Opcionalmente, você pode definir outras propriedades do tool aqui
+    end
+end)
+
+-- Notificação de atualização
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Versão",
+    Text = "v3 - G to Test",
+    Duration = 5
+})
