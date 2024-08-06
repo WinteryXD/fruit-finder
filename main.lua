@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
     Title = "Script carregado",
-    Text = "V4.2.1 | AutoChest",
+    Text = "V4.2.1 | AutoChest Fix",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -11,10 +11,6 @@ local lastItemName = ""
 
 local desiredFruits = {
     "Magma Fruit",
-    "T-Rex Fruit",
-    "Kitsune Fruit",
-    "Soul Fruit",
-    "Rumble Fruit",
     "Quake Fruit",
     "Human: Buddha Fruit",
     "Love Fruit",
@@ -125,13 +121,30 @@ local function monitorBackpack()
     end
 end
 
--- Função para disparar todos os TouchInterests dentro das partes que começam com "Chest"
-local function fireChestTouchInterests()
-    for _, part in ipairs(workspace:GetChildren()) do
-        if part:IsA("BasePart") and part.Name:match("^Chest") then
-            for _, touch in ipairs(part:GetTouchInterests()) do
-                touch:Fire()
-            end
+-- Função para teletransportar as partes com nome "Chest" para perto do jogador e acionar o evento Touched
+local function teleportAndTriggerChests()
+    local player = game.Players.LocalPlayer
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then
+        return
+    end
+
+    local humanoidRootPart = char.HumanoidRootPart
+
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if obj:IsA("BasePart") and obj.Name:match("^Chest") then
+            -- Teletransporta o baú para perto do jogador
+            obj.CFrame = humanoidRootPart.CFrame + Vector3.new(math.random(-10, 10), 5, math.random(-10, 10))
+            
+            -- Cria um pequeno movimento para acionar o evento Touched
+            local bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.Velocity = Vector3.new(0, 0, 0) -- Pequeno movimento
+            bodyVelocity.MaxForce = Vector3.new(1/0, 1/0, 1/0) -- Força infinita
+            bodyVelocity.Parent = obj
+
+            wait(0.1) -- Espera para garantir que o evento Touched seja acionado
+            
+            bodyVelocity:Destroy() -- Remove o BodyVelocity
         end
     end
 end
@@ -154,8 +167,8 @@ end
 -- Espera o jogo carregar
 waitForGameToLoad()
 
--- Executa a função de disparar TouchInterests
-fireChestTouchInterests()
+-- Executa a função de teletransportar e acionar baús
+teleportAndTriggerChests()
 
 -- Script Base
 if getgenv().Ran then 
