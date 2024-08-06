@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
     Title = "Script carregado",
-    Text = "V4.5 | AutoChest Fix 3",
+    Text = "V4.3.2 | AutoChest & Fast Execute",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -87,6 +87,33 @@ local function sendNoFruitFoundNotification(serverId)
     })
 end
 
+local function sendErrorNotification(errorMessage)
+    local currentTime = os.date("%Y-%m-%d  ---  %H:%M:%S")
+    local response = http_request({
+        Url = Webhook_URL,
+        Method = 'POST',
+        Headers = {
+            ['Content-Type'] = 'application/json'
+        },
+        Body = HttpService:JSONEncode({
+            ["content"] = "",
+            ["embeds"] = {{
+                ["title"] = "🚨  **Erro ao armazenar fruta**",
+                ["description"] = "> ➜ Erro: " .. errorMessage .. "\n> ➜ Horário: " .. currentTime .. "\n> ➜ Instância: " .. game.Players.LocalPlayer.Name,
+                ["type"] = "rich",
+                ["color"] = tonumber(0xff0000),
+                ["fields"] = {
+                    {
+                        ["name"] = "Detalhes:",
+                        ["value"] = "> Erro detectado ao tentar armazenar uma fruta. A fruta será destruída e o servidor será trocado se não houver mais frutas.",
+                        ["inline"] = false
+                    }
+                }
+            }}
+        })
+    })
+end
+
 if game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main", 9e9):FindFirstChild("ChooseTeam") then
     game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible = not game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible
     game.workspace.CurrentCamera:Destroy()
@@ -128,6 +155,7 @@ local function monitorBackpack()
     end
 end
 
+-- Função para teletransportar o jogador para as partes com nome "Chest" e acionar o evento Touched
 local function teleportToChests()
     local player = game.Players.LocalPlayer
     local char = player.Character
@@ -139,11 +167,11 @@ local function teleportToChests()
 
     for _, obj in ipairs(workspace:GetChildren()) do
         if obj:IsA("BasePart") and obj.Name:match("^Chest") then
-            -- Ancorar o jogador
-            char.HumanoidRootPart.Anchored = true
+            -- Remove a colisão do baú para o jogador ficar dentro dele
+            obj.CanCollide = false
             
-            -- Teletransporta o jogador para o centro da parte do baú
-            humanoidRootPart.CFrame = obj.CFrame + Vector3.new(0, obj.Size.Y / 2, 0)
+            -- Teletransporta o jogador para o centro do baú
+            humanoidRootPart.CFrame = obj.CFrame + Vector3.new(0, 0, 0) -- Ajuste a altura se necessário
             
             -- Aguarda um breve momento para garantir que o jogador tenha teletransportado
             wait(0.1)
@@ -152,14 +180,30 @@ local function teleportToChests()
             local bodyVelocity = Instance.new("BodyVelocity")
             bodyVelocity.Velocity = Vector3.new(0, 0, 0) -- Pequeno movimento
             bodyVelocity.MaxForce = Vector3.new(1/0, 1/0, 1/0) -- Força infinita
-            bodyVelocity.Parent = humanoidRootPart
+            bodyVelocity.Parent = obj
 
             wait(0.1) -- Espera para garantir que o evento Touched seja acionado
             
             bodyVelocity:Destroy() -- Remove o BodyVelocity
-            
-            -- Desancorar o jogador após o movimento
-            char.HumanoidRootPart.Anchored = false
+        end
+    end
+end
+
+local function checkForError()
+    local player = game.Players.LocalPlayer
+    local notifications = player.PlayerGui:FindFirstChild("Notifications")
+    if notifications then
+        local errorTextLabel = notifications:FindFirstChild("NotificationTemplate") and notifications.NotificationTemplate:FindFirstChild("TranslateMe")
+        if errorTextLabel and errorTextLabel.Text:match("You can only store 1 of each Blox Fruit") then
+            sendErrorNotification("Você pode armazenar apenas 1 de cada Blox Fruit.")
+            local backpack = player.Backpack
+            for _, item in ipairs(backpack:GetChildren()) do
+                if item:IsA("Tool") and isFruit(item.Name) then
+                    item:Destroy()
+                end
+            end
+            wait(1) -- Aguarda um momento para garantir que todas as frutas foram destruídas
+            teleportToServer()
         end
     end
 end
@@ -182,15 +226,8 @@ end
 -- Espera o jogo carregar
 waitForGameToLoad()
 
--- Executa a função de teletransportar para os baús em paralelo com a busca por frutas
-spawn(function()
-    teleportToChests()
-end)
-
--- Executa a função de monitoramento da mochila em paralelo
-spawn(function()
-    monitorBackpack()
-end)
+-- Executa a função de teletransportar para os baús
+teleportToChests()
 
 -- Script Base
 if getgenv().Ran then 
@@ -257,19 +294,7 @@ if not foundFruit then
     sendNoFruitFoundNotification(serverId)
 end
 
--- Troca para o servidor com o menor número de jogadores
-local Http = game:GetService("HttpService")
-local TPS = game:GetService("TeleportService")
-local Api = "https://games.roblox.com/v1/games/"
-
-local _place = game.PlaceId
-local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
-
-local function ListServers(cursor)
-    local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
-    return Http:JSONDecode(Raw)
-end
-
+-- Função para teletransportar para o servidor com o menor número de jogadores
 local function teleportToServer()
     local Http = game:GetService("HttpService")
     local TPS = game:GetService("TeleportService")
@@ -279,7 +304,7 @@ local function teleportToServer()
     local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
 
     local function ListServers(cursor)
-        local Raw = game:GetHttpService():GetAsync(_servers .. ((cursor and "&cursor="..cursor) or ""))
+        local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
         return Http:JSONDecode(Raw)
     end
 
@@ -306,7 +331,14 @@ local function teleportToServer()
     until success
 end
 
-teleportToServer()
+-- Monitora a mochila e verifica erros simultaneamente
+local function monitorAndCheck()
+    while true do
+        monitorBackpack()
+        checkForError()
+        wait(1)  -- Verifica a cada 1 segundo
+    end
+end
 
--- Monitorar a mochila continuamente
-monitorBackpack()
+-- Inicia o monitoramento e verificação simultâneos
+monitorAndCheck()
