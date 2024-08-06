@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
     Title = "Script carregado",
-    Text = "V4.4 | AutoChest Fix 1",
+    Text = "V4.5 | AutoChest Fix 2",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -128,7 +128,6 @@ local function monitorBackpack()
     end
 end
 
--- Função para teletransportar o jogador para as partes com nome "Chest" e acionar o evento Touched
 local function teleportToChests()
     local player = game.Players.LocalPlayer
     local char = player.Character
@@ -141,7 +140,7 @@ local function teleportToChests()
     for _, obj in ipairs(workspace:GetChildren()) do
         if obj:IsA("BasePart") and obj.Name:match("^Chest") then
             -- Teletransporta o jogador para o centro da parte do baú
-            humanoidRootPart.CFrame = obj.CFrame * CFrame.new(0, obj.Size.Y / 2, 0)
+            humanoidRootPart.CFrame = obj.CFrame + Vector3.new(0, obj.Size.Y / 2, 0)
             
             -- Aguarda um breve momento para garantir que o jogador tenha teletransportado
             wait(0.1)
@@ -177,8 +176,15 @@ end
 -- Espera o jogo carregar
 waitForGameToLoad()
 
--- Executa a função de teletransportar para os baús
-teleportToChests()
+-- Executa a função de teletransportar para os baús em paralelo com a busca por frutas
+spawn(function()
+    teleportToChests()
+end)
+
+-- Executa a função de monitoramento da mochila em paralelo
+spawn(function()
+    monitorBackpack()
+end)
 
 -- Script Base
 if getgenv().Ran then 
@@ -267,7 +273,7 @@ local function teleportToServer()
     local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
 
     local function ListServers(cursor)
-        local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
+        local Raw = game:GetHttpService():GetAsync(_servers .. ((cursor and "&cursor="..cursor) or ""))
         return Http:JSONDecode(Raw)
     end
 
@@ -286,7 +292,7 @@ local function teleportToServer()
         if not success then
             warn("Teleport falhou, tentando novamente... Erro: " .. errorMessage)
             if errorMessage:find("unauthorized") or errorMessage:find("not found") then
-                wait(1) -- Espera 5 segundos antes de tentar novamente para esses erros específicos
+                wait(1) -- Espera 1 segundo antes de tentar novamente para esses erros específicos
             else
                 wait(2) -- Espera 2 segundos para outros erros
             end
