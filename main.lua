@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
     Title = "Script carregado",
-    Text = "V4.3 | AutoChest",
+    Text = "V4.3.1 | AutoChest",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -134,7 +134,7 @@ local function teleportToChests()
     for _, obj in ipairs(workspace:GetChildren()) do
         if obj:IsA("BasePart") and obj.Name:match("^Chest") then
             -- Teletransporta o jogador para o baú
-            humanoidRootPart.CFrame = obj.CFrame + Vector3.new(0, 5, 0) -- Ajuste a altura para evitar colidir com o baú
+            humanoidRootPart.CFrame = obj.CFrame -- Ajuste a altura para evitar colidir com o baú
             
             -- Aguarda um breve momento para garantir que o jogador tenha teletransportado
             wait(0.1)
