@@ -44,8 +44,8 @@ local function sendToDiscord(itemName, messageType, playerName)
         Body = HttpService:JSONEncode({
             ["content"] = "",
             ["embeds"] = {{
-                ["title"] = messageType == "fruit" and "🍎  **Nova fruta armazenada!**" or messageType == "destroyed" and "❌  **Fruta não desejada destruída.**" or "🍎  **Novo item na hotbar!**",
-                ["description"] = messageType == "fruit" and "> ➜ @everyone, Fruta armazenada: " .. itemName .. "\n> ➜ Instância que armazenou: " .. playerName or messageType == "destroyed" and "> ➜ Fruta não desejada: " .. itemName .. "\n> ➜ Instância que destruiu: " .. playerName or "> ➜ Item no terceiro slot: " .. itemName,
+                ["title"] = messageType == "fruit" and "🎉  **Nova fruta encontrada e armazenada com sucesso!**" or messageType == "destroyed" and "❌  **Fruta não desejada destruída.**" or "🍎  **Novo item na hotbar!**",
+                ["description"] = messageType == "fruit" and "> ➜ Fruta encontrada: " .. itemName .. "\n> ➜ Instância que armazenou: " .. playerName or messageType == "destroyed" and "> ➜ Fruta não desejada: " .. itemName .. "\n> ➜ Instância que destruiu: " .. playerName or "> ➜ Item no terceiro slot: " .. itemName,
                 ["type"] = "rich",
                 ["color"] = tonumber(0xffffff),
                 ["fields"] = {
