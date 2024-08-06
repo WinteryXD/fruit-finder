@@ -4,16 +4,29 @@ local Webhook_URL = "https://ptb.discord.com/api/webhooks/1269712358607945810/LK
 
 local lastItemName = ""
 
-local function getThirdSlotItemName(player)
-    local backpack = player:FindFirstChildOfClass("Backpack")
-    if backpack then
-        local tools = backpack:GetChildren()
-        if #tools >= 3 then
-            return tools[3]
-        end
-    end
-    return nil
-end
+local desiredFruits = {
+    "Magma Fruit",
+    "Quake Fruit",
+    "Human: Buddha Fruit",
+    "Love Fruit",
+    "Spider Fruit",
+    "Sound Fruit",
+    "Bird: Phoenix Fruit",
+    "Portal Fruit",
+    "Pain Fruit",
+    "Blizzard Fruit",
+    "Gravity Fruit",
+    "Ice Fruit",
+    "Mammoth Fruit",
+    "Dough Fruit",
+    "Shadow Fruit",
+    "Venom Fruit",
+    "Control Fruit",
+    "Dark Fruit",
+    "Spirit Fruit",
+    "Dragon Fruit",
+    "Leopard Fruit"
+}
 
 local function sendToDiscord(itemName, messageType, playerName)
     local currentTime = os.date("%Y-%m-%d  ---  %H:%M:%S")
@@ -26,8 +39,8 @@ local function sendToDiscord(itemName, messageType, playerName)
         Body = HttpService:JSONEncode({
             ["content"] = "",
             ["embeds"] = {{
-                ["title"] = messageType == "fruit" and "🍎  **Nova fruta armazenada!**" or messageType == "destroyed" and "💣  **Fruta destruída!**" or "🍎  **Novo item na hotbar!**",
-                ["description"] = messageType == "fruit" and "> ➜ Fruta armazenada: " .. itemName .. "\n> ➜ Jogador: " .. playerName or messageType == "destroyed" and "> ➜ Fruta destruída: " .. itemName .. "\n> ➜ Jogador: " .. playerName or "> ➜ Item no terceiro slot: " .. itemName,
+                ["title"] = messageType == "fruit" and "🍎  **Nova fruta armazenada!**" or messageType == "destroyed" and "❌  **Fruta não desejada destruída.**" or "🍎  **Novo item na hotbar!**",
+                ["description"] = messageType == "fruit" and "> ➜ @everyone, Fruta armazenada: " .. itemName .. "\n> ➜ Instância que armazenou: " .. playerName or messageType == "destroyed" and "> ➜ Fruta não desejada: " .. itemName .. "\n> ➜ Instância que destruiu: " .. playerName or "> ➜ Item no terceiro slot: " .. itemName,
                 ["type"] = "rich",
                 ["color"] = tonumber(0xffffff),
                 ["fields"] = {
@@ -42,37 +55,65 @@ local function sendToDiscord(itemName, messageType, playerName)
     })
 end
 
-local function hasDesiredFruit(backpack)
-    local desiredFruits = {
-        "Magma Fruit",
-        "Quake Fruit",
-        "Human: Buddha Fruit",
-        "Love Fruit",
-        "Spider Fruit",
-        "Sound Fruit",
-        "Bird: Phoenix Fruit",
-        "Portal Fruit",
-        "Pain Fruit",
-        "Blizzard Fruit",
-        "Gravity Fruit",
-        "Ice Fruit",
-        "Mammoth Fruit",
-        "Dough Fruit",
-        "Shadow Fruit",
-        "Venom Fruit",
-        "Control Fruit",
-        "Dark Fruit",
-        "Spirit Fruit",
-        "Dragon Fruit",
-        "Leopard Fruit"
-    }
-    
-    for _, item in ipairs(backpack:GetChildren()) do
-        if item:IsA("Tool") and table.find(desiredFruits, item.Name) then
-            return true
+local function sendNoFruitFoundNotification(serverId)
+    local currentTime = os.date("%Y-%m-%d  ---  %H:%M:%S")
+    local response = http_request({
+        Url = Webhook_URL,
+        Method = 'POST',
+        Headers = {
+            ['Content-Type'] = 'application/json'
+        },
+        Body = HttpService:JSONEncode({
+            ["content"] = "",
+            ["embeds"] = {{
+                ["title"] = "🚫  **Nenhuma fruta desejada encontrada.**",
+                ["description"] = "> ➜ Servidor: " .. serverId .. "\n> ➜ Horário: " .. currentTime,
+                ["type"] = "rich",
+                ["color"] = tonumber(0xff0000),
+                ["fields"] = {
+                    {
+                        ["name"] = "Detalhes:",
+                        ["value"] = "> Nenhuma fruta desejada foi encontrada no servidor especificado.",
+                        ["inline"] = false
+                    }
+                }
+            }}
+        })
+    })
+end
+
+local function isFruit(itemName)
+    return itemName:find("Fruit") ~= nil
+end
+
+local function isDesiredFruit(itemName)
+    return table.find(desiredFruits, itemName) ~= nil
+end
+
+local function getThirdSlotItemName(player)
+    local backpack = player:FindFirstChildOfClass("Backpack")
+    if backpack then
+        local tools = backpack:GetChildren()
+        if #tools >= 3 then
+            return tools[3]
         end
     end
-    return false
+    return nil
+end
+
+local function monitorBackpack()
+    local plr = game.Players.LocalPlayer
+    while true do
+        if plr.Backpack then
+            for _, item in ipairs(plr.Backpack:GetChildren()) do
+                if item:IsA("Tool") and isFruit(item.Name) and not isDesiredFruit(item.Name) then
+                    sendToDiscord(item.Name, "destroyed", plr.Name)
+                    item:Destroy()
+                end
+            end
+        end
+        wait(0.25)  -- Verifica a cada 0.25 segundos
+    end
 end
 
 -- Anti-AFK Code
@@ -83,8 +124,17 @@ game:GetService("Players").LocalPlayer.Idled:connect(function()
     vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
 end)
 
+local function waitForGameToLoad()
+    local player = game.Players.LocalPlayer
+    repeat
+        wait(1)
+    until player and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild("HumanoidRootPart") and player.PlayerGui:FindFirstChild("Main")
+end
+
+-- Espera o jogo carregar
+waitForGameToLoad()
+
 -- Script Base
-repeat wait() until game:IsLoaded and (game.Players.LocalPlayer or game.Players.PlayerAdded:Wait()) and (game.Players.LocalPlayer.Character or game.Players.CharacterAdded:Wait())
 if getgenv().Ran then 
     return
 else
@@ -92,6 +142,8 @@ else
 end
 
 if game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main", 9e9):FindFirstChild("ChooseTeam") then
+    game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible = not game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible
+    game.workspace.CurrentCamera:Destroy()
     game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
     wait(3)
 end
@@ -108,6 +160,8 @@ local bav = Instance.new("BodyAngularVelocity")
 bav.AngularVelocity = Vector3.new()
 bav.MaxTorque = Vector3.new(1/0, 1/0, 1/0)
 bav.Name = "bAV"
+
+local foundFruit = false
 
 for _,v in next, workspace:GetChildren() do
     if v.Name:find("Fruit") and (v:IsA("Tool") or v:IsA("Model")) then
@@ -134,10 +188,11 @@ for _,v in next, workspace:GetChildren() do
         end)()
         if fruit then
             local backpack = plr.Backpack
-            if hasDesiredFruit(backpack) then
+            if isDesiredFruit(fruit.Name) then
                 print(fruit)
                 game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StoreFruit", fruit:GetAttribute("OriginalName"), fruit)
                 sendToDiscord(fruit.Name, "fruit", plr.Name)
+                foundFruit = true
             else
                 fruit:Destroy()
                 sendToDiscord(fruit.Name, "destroyed", plr.Name)
@@ -146,61 +201,45 @@ for _,v in next, workspace:GetChildren() do
     end
 end
 
-print('nope')
-local currentJobId = game.JobId
-
-repeat
-    task.spawn(pcall, function()
-        local success = false
-        repeat
-            local teleportSuccess, errorMessage = pcall(function()
-                game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer, game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer(math.random(1, 2000))[math.random(1, 2000)])
-            end)
-            if teleportSuccess then
-                success = true
-            else
-                warn("Teleport falhou, tentando novamente... Erro: " .. errorMessage)
-                wait(2) -- Espera 2 segundos antes de tentar novamente
-            end
-        until success
-    end)
-    wait(2)
-until game.JobId ~= currentJobId
-
--- Monitorar o terceiro item na hotbar
-while true do
-    local thirdItem = getThirdSlotItemName(plr)
-    
-    if thirdItem then
-        if thirdItem.Name ~= lastItemName then
-            sendToDiscord(thirdItem.Name, "hotbar", plr.Name)
-            lastItemName = thirdItem.Name
-        end
-    end
-
-    wait(0.25)
+if not foundFruit then
+    local serverId = game.JobId
+    sendNoFruitFoundNotification(serverId)
 end
 
--- Função de teste para criar uma ferramenta no terceiro slot
-local UserInputService = game:GetService("UserInputService")
-UserInputService.InputBegan:Connect(function(input, processed)
-    if not processed and input.KeyCode == Enum.KeyCode.G then
-        local backpack = plr.Backpack
-        -- Remove qualquer item do terceiro slot
-        if backpack and backpack:FindFirstChildOfClass("Tool") then
-            backpack:FindFirstChildOfClass("Tool"):Destroy()
-        end
-        -- Cria uma nova ferramenta com o nome "Leopard Fruit" no terceiro slot
-        local tool = Instance.new("Tool")
-        tool.Name = "Leopard Fruit"
-        tool.Parent = backpack
-        -- Opcionalmente, você pode definir outras propriedades do tool aqui
-    end
-end)
+-- Troca para o servidor com o menor número de jogadores
+local Http = game:GetService("HttpService")
+local TPS = game:GetService("TeleportService")
+local Api = "https://games.roblox.com/v1/games/"
 
--- Notificação de atualização
-game.StarterGui:SetCore("SendNotification", {
-    Title = "Versão",
-    Text = "v3 - G to Test",
-    Duration = 5
-})
+local _place = game.PlaceId
+local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
+
+local function ListServers(cursor)
+    local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
+    return Http:JSONDecode(Raw)
+end
+
+local function teleportToServer()
+    local Server, Next
+    repeat
+        local Servers = ListServers(Next)
+        Server = Servers.data[1]
+        Next = Servers.nextPageCursor
+    until Server
+
+    local success
+    repeat
+        success, errorMessage = pcall(function()
+            TPS:TeleportToPlaceInstance(_place, Server.id, game.Players.LocalPlayer)
+        end)
+        if not success then
+            warn("Teleport falhou, tentando novamente... Erro: " .. errorMessage)
+            wait(2) -- Espera 2 segundos antes de tentar novamente
+        end
+    until success
+end
+
+teleportToServer()
+
+-- Monitorar a mochila continuamente
+monitorBackpack()
