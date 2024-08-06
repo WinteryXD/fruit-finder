@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
     Title = "Script carregado",
-    Text = "V4.3.2 | AutoChest & Fast Execute",
+    Text = "V4.4 | AutoChest Fix 1",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -140,8 +140,8 @@ local function teleportToChests()
 
     for _, obj in ipairs(workspace:GetChildren()) do
         if obj:IsA("BasePart") and obj.Name:match("^Chest") then
-            -- Teletransporta o jogador para o baú
-            humanoidRootPart.CFrame = obj.CFrame -- Ajuste a altura para evitar colidir com o baú
+            -- Teletransporta o jogador para o centro da parte do baú
+            humanoidRootPart.CFrame = obj.CFrame * CFrame.new(0, obj.Size.Y / 2, 0)
             
             -- Aguarda um breve momento para garantir que o jogador tenha teletransportado
             wait(0.1)
@@ -150,7 +150,7 @@ local function teleportToChests()
             local bodyVelocity = Instance.new("BodyVelocity")
             bodyVelocity.Velocity = Vector3.new(0, 0, 0) -- Pequeno movimento
             bodyVelocity.MaxForce = Vector3.new(1/0, 1/0, 1/0) -- Força infinita
-            bodyVelocity.Parent = obj
+            bodyVelocity.Parent = humanoidRootPart
 
             wait(0.1) -- Espera para garantir que o evento Touched seja acionado
             
