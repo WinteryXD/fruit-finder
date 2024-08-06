@@ -1,6 +1,6 @@
-game:GetService("StarterGui"):SetCore("SendNotification",{
+game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V4.4.1 | No Storage Detector & Auto Chest Removed",
+    Text = "V4.5 | ServerHop Fix",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -255,6 +255,7 @@ end
 if not foundFruit then
     local serverId = game.JobId
     sendNoFruitFoundNotification(serverId)
+    teleportToServer()
 end
 
 -- Função para teletransportar para o servidor com o menor número de jogadores
@@ -299,7 +300,7 @@ local function monitorAndCheck()
     while true do
         monitorBackpack()
         checkForError()
-        wait(0.5)  -- Verifica a cada 1 segundo
+        wait(0.5)  -- Verifica a cada 0.5 segundos
     end
 end
 
