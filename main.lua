@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V4.5 | ServerHop Fix",
+    Text = "V4.5.1 | ServerHop Fix 1",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -155,6 +155,43 @@ local function monitorBackpack()
     end
 end
 
+-- Função para teletransportar para o servidor com o menor número de jogadores
+local function teleportToServer()
+    local Http = game:GetService("HttpService")
+    local TPS = game:GetService("TeleportService")
+    local Api = "https://games.roblox.com/v1/games/"
+
+    local _place = game.PlaceId
+    local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
+
+    local function ListServers(cursor)
+        local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
+        return Http:JSONDecode(Raw)
+    end
+
+    local Server, Next
+    repeat
+        local Servers = ListServers(Next)
+        Server = Servers.data[1]
+        Next = Servers.nextPageCursor
+    until Server
+
+    local success
+    repeat
+        success, errorMessage = pcall(function()
+            TPS:TeleportToPlaceInstance(_place, Server.id, game.Players.LocalPlayer)
+        end)
+        if not success then
+            warn("Teleport falhou, tentando novamente... Erro: " .. errorMessage)
+            if errorMessage:find("unauthorized") or errorMessage:find("not found") then
+                wait(1) -- Espera 1 segundo antes de tentar novamente para esses erros específicos
+            else
+                wait(2) -- Espera 2 segundos para outros erros
+            end
+        end
+    until success
+end
+
 local function checkForError()
     local player = game.Players.LocalPlayer
     local notifications = player.PlayerGui:FindFirstChild("Notifications")
@@ -258,42 +295,6 @@ if not foundFruit then
     teleportToServer()
 end
 
--- Função para teletransportar para o servidor com o menor número de jogadores
-local function teleportToServer()
-    local Http = game:GetService("HttpService")
-    local TPS = game:GetService("TeleportService")
-    local Api = "https://games.roblox.com/v1/games/"
-
-    local _place = game.PlaceId
-    local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
-
-    local function ListServers(cursor)
-        local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
-        return Http:JSONDecode(Raw)
-    end
-
-    local Server, Next
-    repeat
-        local Servers = ListServers(Next)
-        Server = Servers.data[1]
-        Next = Servers.nextPageCursor
-    until Server
-
-    local success
-    repeat
-        success, errorMessage = pcall(function()
-            TPS:TeleportToPlaceInstance(_place, Server.id, game.Players.LocalPlayer)
-        end)
-        if not success then
-            warn("Teleport falhou, tentando novamente... Erro: " .. errorMessage)
-            if errorMessage:find("unauthorized") or errorMessage:find("not found") then
-                wait(1) -- Espera 1 segundo antes de tentar novamente para esses erros específicos
-            else
-                wait(2) -- Espera 2 segundos para outros erros
-            end
-        end
-    until success
-end
 
 -- Monitora a mochila e verifica erros simultaneamente
 local function monitorAndCheck()
