@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
     Title = "Script carregado",
-    Text = "V4.4 | No Storage Detector",
+    Text = "V4.4.1 | No Storage Detector & Auto Chest Removed",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -155,40 +155,6 @@ local function monitorBackpack()
     end
 end
 
--- Função para teletransportar o jogador para as partes com nome "Chest" e acionar o evento Touched
-local function teleportToChests()
-    local player = game.Players.LocalPlayer
-    local char = player.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") then
-        return
-    end
-
-    local humanoidRootPart = char.HumanoidRootPart
-
-    for _, obj in ipairs(workspace:GetChildren()) do
-        if obj:IsA("BasePart") and obj.Name:match("^Chest") then
-            -- Remove a colisão do baú para o jogador ficar dentro dele
-            obj.CanCollide = false
-            
-            -- Teletransporta o jogador para o centro do baú
-            humanoidRootPart.CFrame = obj.CFrame + Vector3.new(0, 0, 0) -- Ajuste a altura se necessário
-            
-            -- Aguarda um breve momento para garantir que o jogador tenha teletransportado
-            wait(0.1)
-            
-            -- Cria um pequeno movimento para acionar o evento Touched
-            local bodyVelocity = Instance.new("BodyVelocity")
-            bodyVelocity.Velocity = Vector3.new(0, 0, 0) -- Pequeno movimento
-            bodyVelocity.MaxForce = Vector3.new(1/0, 1/0, 1/0) -- Força infinita
-            bodyVelocity.Parent = obj
-
-            wait(0.1) -- Espera para garantir que o evento Touched seja acionado
-            
-            bodyVelocity:Destroy() -- Remove o BodyVelocity
-        end
-    end
-end
-
 local function checkForError()
     local player = game.Players.LocalPlayer
     local notifications = player.PlayerGui:FindFirstChild("Notifications")
@@ -225,9 +191,6 @@ end
 
 -- Espera o jogo carregar
 waitForGameToLoad()
-
--- Executa a função de teletransportar para os baús
-teleportToChests()
 
 -- Script Base
 if getgenv().Ran then 
@@ -336,7 +299,7 @@ local function monitorAndCheck()
     while true do
         monitorBackpack()
         checkForError()
-        wait(1)  -- Verifica a cada 1 segundo
+        wait(0.5)  -- Verifica a cada 1 segundo
     end
 end
 
