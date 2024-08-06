@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
-	Title = "Script carregado", -- Required
-	Text = "V4.1 | LogAdd + Non-Confirmed Fruit Filtering Fix + Low PlayerCount TP", -- Required
+	Title = "Script carregado",
+	Text = "V4.1.1 | LogAdd + Fruit Filtering Fix + Low PlayerCount TP",
 })
 
 local HttpService = game:GetService("HttpService")
