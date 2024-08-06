@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
     Title = "Script carregado",
-    Text = "V4.5 | AutoChest Fix 2",
+    Text = "V4.5 | AutoChest Fix 3",
 })
 
 local HttpService = game:GetService("HttpService")
