@@ -11,6 +11,10 @@ local lastItemName = ""
 
 local desiredFruits = {
     "Magma Fruit",
+    "T-Rex Fruit",
+    "Kitsune Fruit",
+    "Soul Fruit",
+    "Rumble Fruit",
     "Quake Fruit",
     "Human: Buddha Fruit",
     "Love Fruit",
