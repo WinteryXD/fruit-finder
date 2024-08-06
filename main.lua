@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
     Title = "Script carregado",
-    Text = "V4.3.1 | AutoChest",
+    Text = "V4.3.2 | AutoChest & Fast Execute",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -85,6 +85,13 @@ local function sendNoFruitFoundNotification(serverId)
             }}
         })
     })
+end
+
+if game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main", 9e9):FindFirstChild("ChooseTeam") then
+    game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible = not game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible
+    game.workspace.CurrentCamera:Destroy()
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
+    wait(3)
 end
 
 local function isFruit(itemName)
@@ -178,13 +185,6 @@ if getgenv().Ran then
     return
 else
     getgenv().Ran = true
-end
-
-if game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main", 9e9):FindFirstChild("ChooseTeam") then
-    game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible = not game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible
-    game.workspace.CurrentCamera:Destroy()
-    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
-    wait(3)
 end
 
 local plr = game.Players.LocalPlayer
