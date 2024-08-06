@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
-	Title = "Script carregado",
-	Text = "V4.1.1 | LogAdd + Fruit Filtering Fix + Low PlayerCount TP",
+    Title = "Script carregado",
+    Text = "V4.2 | AutoChest",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -121,6 +121,17 @@ local function monitorBackpack()
     end
 end
 
+-- Função para disparar todos os TouchInterests dentro das partes que começam com "Chest"
+local function fireChestTouchInterests()
+    for _, part in ipairs(workspace:GetChildren()) do
+        if part:IsA("BasePart") and part.Name:match("^Chest") then
+            for _, touch in ipairs(part:GetTouchInterests()) do
+                touch:Fire()
+            end
+        end
+    end
+end
+
 -- Anti-AFK Code
 local vu = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:connect(function()
@@ -138,6 +149,9 @@ end
 
 -- Espera o jogo carregar
 waitForGameToLoad()
+
+-- Executa a função de disparar TouchInterests
+fireChestTouchInterests()
 
 -- Script Base
 if getgenv().Ran then 
