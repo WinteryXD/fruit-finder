@@ -1,3 +1,8 @@
+game:GetService("StarterGui"):SetCore("SendNotification",{
+	Title = "Script carregado", -- Required
+	Text = "V4.1 | LogAdd + Non-Confirmed Fruit Filtering Fix + Low PlayerCount TP", -- Required
+})
+
 local HttpService = game:GetService("HttpService")
 local http_request = syn and syn.request or http and http.request or http_request or request or httprequest
 local Webhook_URL = "https://ptb.discord.com/api/webhooks/1269712358607945810/LKTMDMpw31-LnByV_sn9HD056xsaWY_bsdLDCi0nojto_7wK9W-E4Nna3wvR5DRFcoCL"
@@ -67,13 +72,13 @@ local function sendNoFruitFoundNotification(serverId)
             ["content"] = "",
             ["embeds"] = {{
                 ["title"] = "🚫  **Nenhuma fruta desejada encontrada.**",
-                ["description"] = "> ➜ Servidor: " .. serverId .. "\n> ➜ Horário: " .. currentTime,
+                ["description"] = "> ➜ Servidor: " .. serverId .. "\n> ➜ Horário: " .. currentTime .. "\n> ➜ Instância: " .. game.Players.LocalPlayer.Name,
                 ["type"] = "rich",
                 ["color"] = tonumber(0xff0000),
                 ["fields"] = {
                     {
                         ["name"] = "Detalhes:",
-                        ["value"] = "> Nenhuma fruta desejada foi encontrada no servidor especificado.",
+                        ["value"] = "> Nenhuma fruta desejada foi encontrada no servidor especificado, a instância trocou de servidor.",
                         ["inline"] = false
                     }
                 }
