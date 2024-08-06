@@ -139,6 +139,9 @@ local function teleportToChests()
 
     for _, obj in ipairs(workspace:GetChildren()) do
         if obj:IsA("BasePart") and obj.Name:match("^Chest") then
+            -- Ancorar o jogador
+            char.HumanoidRootPart.Anchored = true
+            
             -- Teletransporta o jogador para o centro da parte do baú
             humanoidRootPart.CFrame = obj.CFrame + Vector3.new(0, obj.Size.Y / 2, 0)
             
@@ -154,6 +157,9 @@ local function teleportToChests()
             wait(0.1) -- Espera para garantir que o evento Touched seja acionado
             
             bodyVelocity:Destroy() -- Remove o BodyVelocity
+            
+            -- Desancorar o jogador após o movimento
+            char.HumanoidRootPart.Anchored = false
         end
     end
 end
