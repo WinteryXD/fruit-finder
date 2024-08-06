@@ -225,6 +225,18 @@ local function ListServers(cursor)
 end
 
 local function teleportToServer()
+    local Http = game:GetService("HttpService")
+    local TPS = game:GetService("TeleportService")
+    local Api = "https://games.roblox.com/v1/games/"
+
+    local _place = game.PlaceId
+    local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
+
+    local function ListServers(cursor)
+        local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
+        return Http:JSONDecode(Raw)
+    end
+
     local Server, Next
     repeat
         local Servers = ListServers(Next)
@@ -239,7 +251,11 @@ local function teleportToServer()
         end)
         if not success then
             warn("Teleport falhou, tentando novamente... Erro: " .. errorMessage)
-            wait(2) -- Espera 2 segundos antes de tentar novamente
+            if errorMessage:find("unauthorized") or errorMessage:find("not found") then
+                wait(1) -- Espera 5 segundos antes de tentar novamente para esses erros específicos
+            else
+                wait(2) -- Espera 2 segundos para outros erros
+            end
         end
     until success
 end
