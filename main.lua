@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V4.5.1 | ServerHop Fix 1",
+    Text = "V4.5.1.1",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -151,11 +151,10 @@ local function monitorBackpack()
                 end
             end
         end
-        wait(0.25)  -- Verifica a cada 0.25 segundos
+        wait(0.25)
     end
 end
 
--- Função para teletransportar para o servidor com o menor número de jogadores
 local function teleportToServer()
     local Http = game:GetService("HttpService")
     local TPS = game:GetService("TeleportService")
@@ -184,9 +183,9 @@ local function teleportToServer()
         if not success then
             warn("Teleport falhou, tentando novamente... Erro: " .. errorMessage)
             if errorMessage:find("unauthorized") or errorMessage:find("not found") then
-                wait(1) -- Espera 1 segundo antes de tentar novamente para esses erros específicos
+                wait(1)
             else
-                wait(2) -- Espera 2 segundos para outros erros
+                wait(2)
             end
         end
     until success
@@ -205,13 +204,12 @@ local function checkForError()
                     item:Destroy()
                 end
             end
-            wait(1) -- Aguarda um momento para garantir que todas as frutas foram destruídas
+            wait(1)
             teleportToServer()
         end
     end
 end
 
--- Anti-AFK Code
 local vu = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:connect(function()
     vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
@@ -226,10 +224,8 @@ local function waitForGameToLoad()
     until player and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild("HumanoidRootPart") and player.PlayerGui:FindFirstChild("Main")
 end
 
--- Espera o jogo carregar
 waitForGameToLoad()
 
--- Script Base
 if getgenv().Ran then 
     return
 else
@@ -295,15 +291,12 @@ if not foundFruit then
     teleportToServer()
 end
 
-
--- Monitora a mochila e verifica erros simultaneamente
 local function monitorAndCheck()
     while true do
         monitorBackpack()
         checkForError()
-        wait(0.5)  -- Verifica a cada 0.5 segundos
+        wait(0.5)
     end
 end
 
--- Inicia o monitoramento e verificação simultâneos
 monitorAndCheck()
