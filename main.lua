@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
 	Title = "Script carregado",
-	Text = "V4.1.1 | Most Consistent Version ig",
+	Text = "V4.1.1.1 | Most Consistent Version ig",
 })
 
 local HttpService = game:GetService("HttpService")
