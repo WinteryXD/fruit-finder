@@ -1,6 +1,6 @@
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "Script carregado",
-    Text = "V5.4 | Minor Destroy",
+game:GetService("StarterGui"):SetCore("SendNotification",{
+	Title = "Script carregado",
+	Text = "V4.1.1 | Most Consistent Version ig",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -10,24 +10,28 @@ local Webhook_URL = "https://ptb.discord.com/api/webhooks/1269712358607945810/LK
 local lastItemName = ""
 
 local desiredFruits = {
-    "Magma Fruit", "Quake Fruit", "Human: Buddha Fruit", "Love Fruit", "Spider Fruit",
-    "Sound Fruit", "Bird: Phoenix Fruit", "Portal Fruit", "Pain Fruit", "Blizzard Fruit",
-    "Gravity Fruit", "Ice Fruit", "Mammoth Fruit", "Dough Fruit", "Shadow Fruit",
-    "Venom Fruit", "Control Fruit", "Dark Fruit", "Spirit Fruit", "Dragon Fruit",
-    "Leopard Fruit", "T-Rex Fruit", "T Rex Fruit"
+    "Magma Fruit",
+    "Quake Fruit",
+    "Human: Buddha Fruit",
+    "Love Fruit",
+    "Spider Fruit",
+    "Sound Fruit",
+    "Bird: Phoenix Fruit",
+    "Portal Fruit",
+    "Pain Fruit",
+    "Blizzard Fruit",
+    "Gravity Fruit",
+    "Ice Fruit",
+    "Mammoth Fruit",
+    "Dough Fruit",
+    "Shadow Fruit",
+    "Venom Fruit",
+    "Control Fruit",
+    "Dark Fruit",
+    "Spirit Fruit",
+    "Dragon Fruit",
+    "Leopard Fruit"
 }
-
-local function deleteLocalScripts()
-    for _, object in pairs(game:GetService("Workspace"):GetDescendants()) do
-        if object:IsA("LocalScript") and object.Name == "Movement + Swim" then
-            print("Removendo LocalScript: ", object:GetFullName())
-            object:Destroy()
-        end
-    end
-    print("Water removida!")
-end
-
-deleteLocalScripts()
 
 local function sendToDiscord(itemName, messageType, playerName)
     local currentTime = os.date("%Y-%m-%d  ---  %H:%M:%S")
@@ -40,8 +44,8 @@ local function sendToDiscord(itemName, messageType, playerName)
         Body = HttpService:JSONEncode({
             ["content"] = "",
             ["embeds"] = {{
-                ["title"] = messageType == "fruit" and "🎉  **Nova fruta encontrada e armazenada com sucesso!**" or messageType == "destroyed" and "❌  **Fruta não desejada destruída.**" or "🍎  **Novo item na hotbar!**",
-                ["description"] = messageType == "fruit" and "> ➜ Fruta encontrada: " .. itemName .. "\n> ➜ Instância que armazenou: " .. playerName or messageType == "destroyed" and "> ➜ Fruta não desejada: " .. itemName .. "\n> ➜ Instância que destruiu: " .. playerName or "> ➜ Item no terceiro slot: " .. itemName,
+                ["title"] = messageType == "fruit" and "🍎  **Nova fruta armazenada!**" or messageType == "destroyed" and "❌  **Fruta não desejada destruída.**" or "🍎  **Novo item na hotbar!**",
+                ["description"] = messageType == "fruit" and "> ➜ @everyone, Fruta armazenada: " .. itemName .. "\n> ➜ Instância que armazenou: " .. playerName or messageType == "destroyed" and "> ➜ Fruta não desejada: " .. itemName .. "\n> ➜ Instância que destruiu: " .. playerName or "> ➜ Item no terceiro slot: " .. itemName,
                 ["type"] = "rich",
                 ["color"] = tonumber(0xffffff),
                 ["fields"] = {
@@ -83,40 +87,6 @@ local function sendNoFruitFoundNotification(serverId)
     })
 end
 
-local function sendErrorNotification(errorMessage)
-    local currentTime = os.date("%Y-%m-%d  ---  %H:%M:%S")
-    local response = http_request({
-        Url = Webhook_URL,
-        Method = 'POST',
-        Headers = {
-            ['Content-Type'] = 'application/json'
-        },
-        Body = HttpService:JSONEncode({
-            ["content"] = "",
-            ["embeds"] = {{
-                ["title"] = "🚨  **Erro ao armazenar fruta**",
-                ["description"] = "> ➜ Erro: " .. errorMessage .. "\n> ➜ Horário: " .. currentTime .. "\n> ➜ Instância: " .. game.Players.LocalPlayer.Name,
-                ["type"] = "rich",
-                ["color"] = tonumber(0xff0000),
-                ["fields"] = {
-                    {
-                        ["name"] = "Detalhes:",
-                        ["value"] = "> Erro detectado ao tentar armazenar uma fruta. A fruta será destruída e o servidor será trocado se não houver mais frutas.",
-                        ["inline"] = false
-                    }
-                }
-            }}
-        })
-    })
-end
-
-if game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main", 9e9):FindFirstChild("ChooseTeam") then
-    game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible = not game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible
-    game.workspace.CurrentCamera:Destroy()
-    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
-    wait(3)
-end
-
 local function isFruit(itemName)
     return itemName:find("Fruit") ~= nil
 end
@@ -143,85 +113,15 @@ local function monitorBackpack()
             for _, item in ipairs(plr.Backpack:GetChildren()) do
                 if item:IsA("Tool") and isFruit(item.Name) and not isDesiredFruit(item.Name) then
                     sendToDiscord(item.Name, "destroyed", plr.Name)
-                    teleportToServer()
+                    item:Destroy()
                 end
             end
         end
-        wait(0.25)
+        wait(0.25)  -- Verifica a cada 0.25 segundos
     end
 end
 
-local function teleportToServer()
-    local Http = game:GetService("HttpService")
-    local TPS = game:GetService("TeleportService")
-    local Api = "https://games.roblox.com/v1/games/"
-
-    local _place = game.PlaceId
-    local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
-
-    local function ListServers(cursor)
-        local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
-        return Http:JSONDecode(Raw)
-    end
-
-    local Server, Next
-    repeat
-        local Servers = ListServers(Next)
-        Server = Servers.data[1]
-        Next = Servers.nextPageCursor
-    until Server
-
-    local success
-    repeat
-        success, errorMessage = pcall(function()
-            TPS:TeleportToPlaceInstance(_place, Server.id, game.Players.LocalPlayer)
-        end)
-        if not success then
-            warn("❌ Teleport falhou, tentando novamente... Erro: " .. errorMessage)
-            if errorMessage:find("unauthorized") or errorMessage:find("not found") or errorMessage:find("ServerFull") then
-                wait(1)
-            else
-                wait(2)
-            end
-        end
-    until success
-end
-
-local function checkForError()
-    local player = game.Players.LocalPlayer
-    local notifications = player.PlayerGui:FindFirstChild("Notifications")
-    if notifications then
-        local errorTextLabel = notifications:FindFirstChild("NotificationTemplate") and notifications.NotificationTemplate:FindFirstChild("TranslateMe")
-        if errorTextLabel and errorTextLabel.Text:match("{color1_Red}You can only store 1 of each Blox Fruit.{color1_/}") then
-            sendErrorNotification("Você pode armazenar apenas 1 de cada Blox Fruit.")
-            local backpack = player.Backpack
-            for _, item in ipairs(backpack:GetChildren()) do
-                if item:IsA("Tool") and isFruit(item.Name) then
-                    teleportToServer()
-                end
-            end
-            wait(1)
-            teleportToServer()
-        end
-    end
-end
-
-local function monitorForHandle()
-    while true do
-        for _, v in ipairs(workspace:GetChildren()) do
-            if v.Name:find("Fruit") and (v:IsA("Tool") or v:IsA("Model")) then
-                local fruitHandle = v:FindFirstChild("Handle")
-                if not fruitHandle then
-                    sendToDiscord(v.Name, "error", game.Players.LocalPlayer.Name)
-                    teleportToServer()
-                    break
-                end
-            end
-        end
-        wait(2)
-    end
-end
-
+-- Anti-AFK Code
 local vu = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:connect(function()
     vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
@@ -232,16 +132,25 @@ end)
 local function waitForGameToLoad()
     local player = game.Players.LocalPlayer
     repeat
-    wait(1)
-    until player and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild("HumanoidRootPart")
+        wait(1)
+    until player and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild("HumanoidRootPart") and player.PlayerGui:FindFirstChild("Main")
 end
 
+-- Espera o jogo carregar
 waitForGameToLoad()
 
+-- Script Base
 if getgenv().Ran then 
     return
 else
     getgenv().Ran = true
+end
+
+if game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main", 9e9):FindFirstChild("ChooseTeam") then
+    game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible = not game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible
+    game.workspace.CurrentCamera:Destroy()
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
+    wait(3)
 end
 
 local plr = game.Players.LocalPlayer
@@ -290,14 +199,9 @@ for _,v in next, workspace:GetChildren() do
                 sendToDiscord(fruit.Name, "fruit", plr.Name)
                 foundFruit = true
             else
-                teleportToServer()
+                fruit:Destroy()
                 sendToDiscord(fruit.Name, "destroyed", plr.Name)
             end
-        else
-            -- Fruta foi pega por outro jogador
-            sendToDiscord(v.Name, "error", plr.Name)
-            teleportToServer()
-            break
         end
     end
 end
@@ -305,18 +209,58 @@ end
 if not foundFruit then
     local serverId = game.JobId
     sendNoFruitFoundNotification(serverId)
-    teleportToServer()
 end
 
-local function monitorAndCheck()
-    while true do
-        monitorBackpack()
-        checkForError()
-        wait(0.5)
+-- Troca para o servidor com o menor número de jogadores
+local Http = game:GetService("HttpService")
+local TPS = game:GetService("TeleportService")
+local Api = "https://games.roblox.com/v1/games/"
+
+local _place = game.PlaceId
+local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
+
+local function ListServers(cursor)
+    local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
+    return Http:JSONDecode(Raw)
+end
+
+local function teleportToServer()
+    local Http = game:GetService("HttpService")
+    local TPS = game:GetService("TeleportService")
+    local Api = "https://games.roblox.com/v1/games/"
+
+    local _place = game.PlaceId
+    local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
+
+    local function ListServers(cursor)
+        local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
+        return Http:JSONDecode(Raw)
     end
+
+    local Server, Next
+    repeat
+        local Servers = ListServers(Next)
+        Server = Servers.data[1]
+        Next = Servers.nextPageCursor
+    until Server
+
+    local success
+    repeat
+        success, errorMessage = pcall(function()
+            TPS:TeleportToPlaceInstance(_place, Server.id, game.Players.LocalPlayer)
+        end)
+        if not success then
+            warn("Teleport falhou, tentando novamente... Erro: " .. errorMessage)
+            if errorMessage:find("unauthorized") or errorMessage:find("not found") then
+                wait(1) -- Espera 5 segundos antes de tentar novamente para esses erros específicos
+            else
+                wait(2) -- Espera 2 segundos para outros erros
+            end
+        end
+    until success
 end
 
-monitorAndCheck()
-monitorForHandle()
-wait(180)
 teleportToServer()
+
+-- Monitorar a mochila continuamente
+monitorBackpack()
