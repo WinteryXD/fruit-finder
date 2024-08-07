@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V4.6.1.1 | Water Removal",
+    Text = "V4.7 | Water Fix",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -33,13 +33,16 @@ local desiredFruits = {
     "Leopard Fruit"
 }
 local tempplr = game.Players.LocalPlayer
-local water = game:GetService("Workspace").Characters[tempplr]:WaitForChild["Movement + Swim"]
+local plrname = tempplr.Character.Name
+local water = game:GetService("Workspace").Characters:WaitForChild("Wintery_XD" or "WinteryStore1" or "WinteryStore2" or "WinteryDreamer"):WaitForChild("Movement + Swim")
 game:GetService("Workspace").Map["WaterBase-Plane"].CanCollide = false
+
 if water then
-water:Destroy()
+    water:Destroy()
 else
     print("no water")
 end
+
 
 local function sendToDiscord(itemName, messageType, playerName)
     local currentTime = os.date("%Y-%m-%d  ---  %H:%M:%S")
