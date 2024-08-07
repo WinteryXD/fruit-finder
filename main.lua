@@ -14,7 +14,7 @@ local desiredFruits = {
     "Sound Fruit", "Bird: Phoenix Fruit", "Portal Fruit", "Pain Fruit", "Blizzard Fruit",
     "Gravity Fruit", "Ice Fruit", "Mammoth Fruit", "Dough Fruit", "Shadow Fruit",
     "Venom Fruit", "Control Fruit", "Dark Fruit", "Spirit Fruit", "Dragon Fruit",
-    "Leopard Fruit"
+    "Leopard Fruit", "T-Rex Fruit", "T Rex Fruit"
 }
 
 local function deleteLocalScripts()
