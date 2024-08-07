@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V4.8 | Water Fix",
+    Text = "V5 | Water Global",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -33,20 +33,18 @@ local desiredFruits = {
     "Leopard Fruit"
 }
 
-local plrname = game.Players.LocalPlayer.Character.Name
-if plrname == "Wintery_XD" then
-    game:GetService("Workspace").Characters:WaitForChild("Wintery_XD"):WaitForChild("Movement + Swim"):Destroy()
-elseif plrname == "WinteryBanco1" then
-    game:GetService("Workspace").Characters:WaitForChild("WinteryStore1"):WaitForChild("Movement + Swim"):Destroy()
-elseif plrname == "WinteryStore2" then
-    game:GetService("Workspace").Characters:WaitForChild("WinteryStore2"):WaitForChild("Movement + Swim"):Destroy()
-elseif plrname == "WinteryStore3" then
-    game:GetService("Workspace").Characters:WaitForChild("WinteryStore3"):WaitForChild("Movement + Swim"):Destroy()
-elseif plrname == "WinteryDreamer" then
-    game:GetService("Workspace").Characters:WaitForChild("WinteryDreamer"):WaitForChild("Movement + Swim"):Destroy()
-else
-    print("No player")
+local function deleteLocalScripts()
+    for _, object in pairs(game:GetService("Workspace"):GetDescendants()) do
+        if object:IsA("LocalScript") and object.Name == "Movement + Swim" then
+            print("Removendo LocalScript: ", object:GetFullName())
+            object:Destroy()
+        end
+    end
+    print("Water removida!")
 end
+
+deleteLocalScripts()
+
 
 
 local function sendToDiscord(itemName, messageType, playerName)
