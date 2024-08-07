@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V5.1 | Infinite Waiting Fix",
+    Text = "V5.2 | Wait For Load & Handler For Fruit",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -10,26 +10,10 @@ local Webhook_URL = "https://ptb.discord.com/api/webhooks/1269712358607945810/LK
 local lastItemName = ""
 
 local desiredFruits = {
-    "Magma Fruit",
-    "Quake Fruit",
-    "Human: Buddha Fruit",
-    "Love Fruit",
-    "Spider Fruit",
-    "Sound Fruit",
-    "Bird: Phoenix Fruit",
-    "Portal Fruit",
-    "Pain Fruit",
-    "Blizzard Fruit",
-    "Gravity Fruit",
-    "Ice Fruit",
-    "Mammoth Fruit",
-    "Dough Fruit",
-    "Shadow Fruit",
-    "Venom Fruit",
-    "Control Fruit",
-    "Dark Fruit",
-    "Spirit Fruit",
-    "Dragon Fruit",
+    "Magma Fruit", "Quake Fruit", "Human: Buddha Fruit", "Love Fruit", "Spider Fruit",
+    "Sound Fruit", "Bird: Phoenix Fruit", "Portal Fruit", "Pain Fruit", "Blizzard Fruit",
+    "Gravity Fruit", "Ice Fruit", "Mammoth Fruit", "Dough Fruit", "Shadow Fruit",
+    "Venom Fruit", "Control Fruit", "Dark Fruit", "Spirit Fruit", "Dragon Fruit",
     "Leopard Fruit"
 }
 
@@ -44,8 +28,6 @@ local function deleteLocalScripts()
 end
 
 deleteLocalScripts()
-
-
 
 local function sendToDiscord(itemName, messageType, playerName)
     local currentTime = os.date("%Y-%m-%d  ---  %H:%M:%S")
@@ -247,14 +229,14 @@ game:GetService("Players").LocalPlayer.Idled:connect(function()
     vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
 end)
 
---local function waitForGameToLoad()
---    local player = game.Players.LocalPlayer
---    repeat
---        wait(1)
---    until player and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild("HumanoidRootPart") and player.PlayerGui:FindFirstChild("Main")
---end
+local function waitForGameToLoad()
+    local player = game.Players.LocalPlayer
+    repeat
+    wait(1)
+    until player and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild("HumanoidRootPart")
+end
 
---waitForGameToLoad()
+waitForGameToLoad()
 
 if getgenv().Ran then 
     return
@@ -311,6 +293,11 @@ for _,v in next, workspace:GetChildren() do
                 fruit:Destroy()
                 sendToDiscord(fruit.Name, "destroyed", plr.Name)
             end
+        else
+            -- Fruta foi pega por outro jogador
+            sendToDiscord(v.Name, "error", plr.Name)
+            teleportToServer()
+            break
         end
     end
 end
