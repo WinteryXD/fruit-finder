@@ -181,7 +181,7 @@ for _,v in next, workspace:GetChildren() do
             local p = t:Create(chr.HumanoidRootPart, TweenInfo.new((plr:DistanceFromCharacter(v.Handle.Position)-100)/320, Enum.EasingStyle.Linear), {CFrame = v.Handle.CFrame + Vector3.new(0, v.Handle.Size.Y, 0)})
             p:Play()
             p.Completed:Wait()
-            chr.HumanoidRootPart.CFrame = v.Handle.CFrame
+            chr:WaitForChild("HumanoidRootPart").CFrame = v.Handle.CFrame
             anc1:Destroy()
             anc2:Destroy()
             wait(1)
