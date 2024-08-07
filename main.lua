@@ -331,3 +331,5 @@ end
 
 monitorAndCheck()
 monitorForHandle()
+wait(180)
+teleportToServer()
