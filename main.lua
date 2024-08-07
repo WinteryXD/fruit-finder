@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V4.6.0.1 | No Handle Detection + No Storage Detection Fix 1",
+    Text = "V4.6.0.1",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -240,7 +240,7 @@ end)
 --    until player and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild("HumanoidRootPart") and player.PlayerGui:FindFirstChild("Main")
 --end
 
-waitForGameToLoad()
+--waitForGameToLoad()
 
 if getgenv().Ran then 
     return
