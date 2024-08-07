@@ -47,8 +47,8 @@ local function sendToDiscord(itemName, messageType, playerName)
         Body = HttpService:JSONEncode({
             ["content"] = "",
             ["embeds"] = {{
-                ["title"] = messageType == "fruit" and "🍎  **Nova fruta armazenada!**" or messageType == "destroyed" and "❌  **Fruta não desejada destruída.**" or "🍎  **Novo item na hotbar!**",
-                ["description"] = messageType == "fruit" and "> ➜ @everyone, Fruta armazenada: " .. itemName .. "\n> ➜ Instância que armazenou: " .. playerName or messageType == "destroyed" and "> ➜ Fruta não desejada: " .. itemName .. "\n> ➜ Instância que destruiu: " .. playerName or "> ➜ Item no terceiro slot: " .. itemName,
+                ["title"] = messageType == "fruit" and "🎉  **Nova fruta armazenada!**" or messageType == "destroyed" and "❌  **Fruta descartada.**" or "🍎  **Novo item na hotbar!**",
+                ["description"] = messageType == "fruit" and "> ➜ Fruta armazenada: " .. itemName .. "\n> ➜ Instância que armazenou: " .. playerName or messageType == "destroyed" and "> ➜ Fruta que foi descartada: " .. itemName .. "\n> ➜ Instância que destruiu: " .. playerName or "> ➜ Item no terceiro slot: " .. itemName,
                 ["type"] = "rich",
                 ["color"] = tonumber(0xffffff),
                 ["fields"] = {
@@ -74,14 +74,14 @@ local function sendNoFruitFoundNotification(serverId)
         Body = HttpService:JSONEncode({
             ["content"] = "",
             ["embeds"] = {{
-                ["title"] = "🚫  **Nenhuma fruta desejada encontrada.**",
-                ["description"] = "> ➜ Servidor: " .. serverId .. "\n> ➜ Horário: " .. currentTime .. "\n> ➜ Instância: " .. game.Players.LocalPlayer.Name,
+                ["title"] = "🚫  **Nenhuma fruta desejada foi encontrada neste servidor.**",
+                ["description"] = "> ➜ Dados do Servidor: " .. serverId .. "\n> ➜ Horário: " .. currentTime .. "\n> ➜ Instância: " .. game.Players.LocalPlayer.Name,
                 ["type"] = "rich",
                 ["color"] = tonumber(0xff0000),
                 ["fields"] = {
                     {
                         ["name"] = "Detalhes:",
-                        ["value"] = "> Nenhuma fruta desejada foi encontrada no servidor especificado, a instância trocou de servidor.",
+                        ["value"] = "> Nenhuma fruta desejada foi encontrada no servidor especificado, a instância agora trocou de servidor.",
                         ["inline"] = false
                     }
                 }
