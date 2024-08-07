@@ -30,7 +30,10 @@ local desiredFruits = {
     "Dark Fruit",
     "Spirit Fruit",
     "Dragon Fruit",
-    "Leopard Fruit"
+    "Leopard Fruit",
+    "T-Rex Fruit",
+    "T Rex Fruit",
+    "Kitsune Fruit"
 }
 
 local function sendToDiscord(itemName, messageType, playerName)
