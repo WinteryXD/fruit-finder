@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V5.2 | Wait For Load & Handler For Fruit",
+    Text = "V5.3 | Wait For Load & Handler For Fruit",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -290,7 +290,7 @@ for _,v in next, workspace:GetChildren() do
                 sendToDiscord(fruit.Name, "fruit", plr.Name)
                 foundFruit = true
             else
-                fruit:Destroy()
+                teleportToServer()
                 sendToDiscord(fruit.Name, "destroyed", plr.Name)
             end
         else
