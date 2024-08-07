@@ -32,6 +32,14 @@ local desiredFruits = {
     "Dragon Fruit",
     "Leopard Fruit"
 }
+local tempplr = game.Players.LocalPlayer
+local water = game:GetService("Workspace").Characters[tempplr]:WaitForChild["Movement + Swim"]
+game:GetService("Workspace").Map["WaterBase-Plane"].CanCollide = false
+if water then
+water:Destroy()
+else
+    print("no water")
+end
 
 local function sendToDiscord(itemName, messageType, playerName)
     local currentTime = os.date("%Y-%m-%d  ---  %H:%M:%S")
