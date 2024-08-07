@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V4.7 | Water Fix",
+    Text = "V4.8 | Water Fix",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -32,15 +32,20 @@ local desiredFruits = {
     "Dragon Fruit",
     "Leopard Fruit"
 }
-local tempplr = game.Players.LocalPlayer
-local plrname = tempplr.Character.Name
-local water = game:GetService("Workspace").Characters:WaitForChild("Wintery_XD" or "WinteryStore1" or "WinteryStore2" or "WinteryDreamer"):WaitForChild("Movement + Swim")
-game:GetService("Workspace").Map["WaterBase-Plane"].CanCollide = false
 
-if water then
-    water:Destroy()
+local plrname = game.Players.LocalPlayer.Character.Name
+if plrname == "Wintery_XD" then
+    game:GetService("Workspace").Characters:WaitForChild("Wintery_XD"):WaitForChild("Movement + Swim"):Destroy()
+elseif plrname == "WinteryBanco1" then
+    game:GetService("Workspace").Characters:WaitForChild("WinteryStore1"):WaitForChild("Movement + Swim"):Destroy()
+elseif plrname == "WinteryStore2" then
+    game:GetService("Workspace").Characters:WaitForChild("WinteryStore2"):WaitForChild("Movement + Swim"):Destroy()
+elseif plrname == "WinteryStore3" then
+    game:GetService("Workspace").Characters:WaitForChild("WinteryStore3"):WaitForChild("Movement + Swim"):Destroy()
+elseif plrname == "WinteryDreamer" then
+    game:GetService("Workspace").Characters:WaitForChild("WinteryDreamer"):WaitForChild("Movement + Swim"):Destroy()
 else
-    print("no water")
+    print("No player")
 end
 
 
