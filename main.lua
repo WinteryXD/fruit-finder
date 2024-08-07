@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V4.6 | No Handle Detection + No Storage Detection Fix 1",
+    Text = "V4.6.0.1 | No Handle Detection + No Storage Detection Fix 1",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -233,12 +233,12 @@ game:GetService("Players").LocalPlayer.Idled:connect(function()
     vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
 end)
 
-local function waitForGameToLoad()
-    local player = game.Players.LocalPlayer
-    repeat
-        wait(1)
-    until player and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild("HumanoidRootPart") and player.PlayerGui:FindFirstChild("Main")
-end
+--local function waitForGameToLoad()
+--    local player = game.Players.LocalPlayer
+--    repeat
+--        wait(1)
+--    until player and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild("HumanoidRootPart") and player.PlayerGui:FindFirstChild("Main")
+--end
 
 waitForGameToLoad()
 
