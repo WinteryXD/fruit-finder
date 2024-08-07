@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V4.5.1.1",
+    Text = "V4.6 | No Handle Detection + No Storage Detection Fix 1",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -181,7 +181,7 @@ local function teleportToServer()
             TPS:TeleportToPlaceInstance(_place, Server.id, game.Players.LocalPlayer)
         end)
         if not success then
-            warn("Teleport falhou, tentando novamente... Erro: " .. errorMessage)
+            warn("❌ Teleport falhou, tentando novamente... Erro: " .. errorMessage)
             if errorMessage:find("unauthorized") or errorMessage:find("not found") then
                 wait(1)
             else
@@ -196,7 +196,7 @@ local function checkForError()
     local notifications = player.PlayerGui:FindFirstChild("Notifications")
     if notifications then
         local errorTextLabel = notifications:FindFirstChild("NotificationTemplate") and notifications.NotificationTemplate:FindFirstChild("TranslateMe")
-        if errorTextLabel and errorTextLabel.Text:match("You can only store 1 of each Blox Fruit") then
+        if errorTextLabel and errorTextLabel.Text:match("{color1_Red}You can only store 1 of each Blox Fruit.{color1_/}") then
             sendErrorNotification("Você pode armazenar apenas 1 de cada Blox Fruit.")
             local backpack = player.Backpack
             for _, item in ipairs(backpack:GetChildren()) do
@@ -207,6 +207,22 @@ local function checkForError()
             wait(1)
             teleportToServer()
         end
+    end
+end
+
+local function monitorForHandle()
+    while true do
+        for _, v in ipairs(workspace:GetChildren()) do
+            if v.Name:find("Fruit") and (v:IsA("Tool") or v:IsA("Model")) then
+                local fruitHandle = v:FindFirstChild("Handle")
+                if not fruitHandle then
+                    sendToDiscord(v.Name, "error", game.Players.LocalPlayer.Name)
+                    teleportToServer()
+                    break
+                end
+            end
+        end
+        wait(2)
     end
 end
 
@@ -300,3 +316,4 @@ local function monitorAndCheck()
 end
 
 monitorAndCheck()
+monitorForHandle()
