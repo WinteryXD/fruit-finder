@@ -196,7 +196,7 @@ local function teleportToServer()
         end)
         if not success then
             warn("❌ Teleport falhou, tentando novamente... Erro: " .. errorMessage)
-            if errorMessage:find("unauthorized") or errorMessage:find("not found") then
+            if errorMessage:find("unauthorized") or errorMessage:find("not found") or errorMessage:find("ServerFull") then
                 wait(1)
             else
                 wait(2)
