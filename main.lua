@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V5.3 | Wait For Load & Handler For Fruit",
+    Text = "V5.4 | Minor Destroy",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -143,7 +143,7 @@ local function monitorBackpack()
             for _, item in ipairs(plr.Backpack:GetChildren()) do
                 if item:IsA("Tool") and isFruit(item.Name) and not isDesiredFruit(item.Name) then
                     sendToDiscord(item.Name, "destroyed", plr.Name)
-                    item:Destroy()
+                    teleportToServer()
                 end
             end
         end
@@ -197,7 +197,7 @@ local function checkForError()
             local backpack = player.Backpack
             for _, item in ipairs(backpack:GetChildren()) do
                 if item:IsA("Tool") and isFruit(item.Name) then
-                    item:Destroy()
+                    teleportToServer()
                 end
             end
             wait(1)
