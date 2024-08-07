@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Script carregado",
-    Text = "V5 | Water Global",
+    Text = "V5.1 | Infinite Waiting Fix",
 })
 
 local HttpService = game:GetService("HttpService")
