@@ -1,6 +1,6 @@
 game:GetService("StarterGui"):SetCore("SendNotification",{
 	Title = "Script carregado",
-	Text = "V4.1.2 | Most Consistent Version ig",
+	Text = "V4.1.3 | Most Consistent Version ig",
 })
 
 local HttpService = game:GetService("HttpService")
@@ -221,7 +221,7 @@ bav.Name = "bAV"
 local foundFruit = false
 
 for _,v in next, workspace:GetChildren() do
-    if v.Name:find("Fruit") and (v:IsA("Tool") and v.Name:find("Fruit").Handle or v:IsA("Model")) then
+    if v.Name:find("Fruit") and (v:IsA("Tool") or v:IsA("Model")) then
         repeat
             local anc1 = bv:Clone()
             anc1.Parent = chr.HumanoidRootPart
@@ -264,8 +264,10 @@ if not foundFruit then
 end
 
 
-
+while true do
 teleportToServer()
+	wait(1)
+end
 
 -- Monitorar a mochila continuamente
 monitorBackpack()
