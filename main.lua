@@ -221,7 +221,7 @@ bav.Name = "bAV"
 local foundFruit = false
 
 for _,v in next, workspace:GetChildren() do
-    if v.Name:find("Fruit") and (v:IsA("Tool") or v:IsA("Model")) then
+    if v.Name:find("Fruit") and (v:IsA("Tool") and v.Name:find("Fruit").Handle or v:IsA("Model")) then
         repeat
             local anc1 = bv:Clone()
             anc1.Parent = chr.HumanoidRootPart
